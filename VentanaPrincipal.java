@@ -12,18 +12,29 @@ import javax.swing.*;
  * 
  * @version 1.2/2020
  */
+
+// Label y un textfield para nota (SOLO UNA) -
+// Necesito un JList para verlas -
+// BOTONES:  añadir nota
+// eliminar una nota
+// borrar todas las notas
+// CALCULAR hace los promedios , desviacion ,mayor y menor como el ejercicio original
+
 public class VentanaPrincipal extends JFrame implements ActionListener {
     private Container contenedor;
     private JLabel nota, promedio, desviacion, mayor, menor;
     private JTextField campoNota;
-    private JButton calcular, limpiar;
+    private JButton calcular, limpiar, addNota;
     private JList campoLista;
+    DefaultListModel<Double> modeloLista;
+    JScrollPane scrollLista;
 
-    ListaNotas listaNotas;
+    static Notas notas = new Notas();
+
 
     public VentanaPrincipal() {
         inicio(); // Inicializa completamente la VISTA
-        setTitle("Notas");
+        setTitle("Calculadora Notas");
         setSize(280, 380);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,37 +45,52 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         contenedor = getContentPane(); /* Obtiene el panel de contenidos de la ventana */
         contenedor.setLayout(null); /* Establece que el contenedor no tiene layout */
 
-        // Nota 1
-        nota = new JLabel("Notas:");
-        nota.setBounds(20, 20, 135, 23);
-        campoNota = new JTextField();
-        campoNota.setBounds(105, 20, 135, 23);
+         // Campo de entrada
+    nota = new JLabel("Nota:");
+    nota.setBounds(20, 20, 50, 25);
+    campoNota = new JTextField();
+    campoNota.setBounds(80, 20, 170, 25);
 
-        // Botón Calcular
-        calcular = new JButton("Calcular");
-        calcular.setBounds(20, 170, 100, 23);
-        calcular.addActionListener(this);
+    // Modelo
+    modeloLista = new DefaultListModel<>();
 
-        // Botón Limpiar
-        limpiar = new JButton("Limpiar");
-        limpiar.setBounds(125, 170, 80, 23);
-        limpiar.addActionListener(this);
+    // Lista de notas
+    campoLista = new JList<>();
+    campoLista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    campoLista.setModel(modeloLista);
 
-        campoLista = new JList<>();
-        campoLista.getModel();
 
-        // Etiquetas para resultados
-        promedio = new JLabel("Promedio = ");
-        promedio.setBounds(20, 210, 200, 23);
+    scrollLista = new JScrollPane();
+    scrollLista.setBounds(20, 60, 230, 80);
+    scrollLista.setViewportView(campoLista);
 
-        desviacion = new JLabel("Desviación estándar = ");
-        desviacion.setBounds(20, 240, 200, 23);
+    // Botón Añadir
+    addNota = new JButton("Añadir");
+    addNota.setBounds(20, 150, 100, 25);
+    addNota.addActionListener(this);
 
-        mayor = new JLabel("Valor mayor = ");
-        mayor.setBounds(20, 270, 120, 23);
+    // Botón Calcular
+    calcular = new JButton("Calcular");
+    calcular.setBounds(130, 150, 120, 25);
+    calcular.addActionListener(this);
 
-        menor = new JLabel("Valor menor = ");
-        menor.setBounds(20, 300, 120, 23);
+    // Botón Limpiar
+    limpiar = new JButton("Limpiar");
+    limpiar.setBounds(80, 185, 100, 25);
+    limpiar.addActionListener(this);
+
+    // Etiquetas de resultados
+    promedio = new JLabel("Promedio = ");
+    promedio.setBounds(20, 220, 240, 23);
+
+    desviacion = new JLabel("Desviación estándar = ");
+    desviacion.setBounds(20, 250, 240, 23);
+
+    mayor = new JLabel("Valor mayor = ");
+    mayor.setBounds(20, 280, 240, 23);
+
+    menor = new JLabel("Valor menor = ");
+    menor.setBounds(20, 310, 240, 23);
 
         // Añadir componentes
         contenedor.add(nota);
@@ -75,21 +101,14 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         contenedor.add(desviacion);
         contenedor.add(mayor);
         contenedor.add(menor);
-        contenedor.add(campoLista);
+        contenedor.add(addNota);
+        contenedor.add(scrollLista);
     }
 
     @Override
     public void actionPerformed(ActionEvent evento) {
         if (evento.getSource() == calcular) {
-            Notas notas = new Notas();
 
-            ArrayList<Double> uso = notas.getListaNotas();
-            uso.add(Double.parseDouble(campoNota.getText()));
-
-            notas.setListaNotas(uso);
-
-            notas.calcularPromedio();
-            notas.calcularDesviacion();
             double prom = notas.calcularPromedio();
             double desv = notas.calcularDesviacion();
 
@@ -98,9 +117,27 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
             mayor.setText("Valor mayor = " + notas.calcularMayor());
             menor.setText("Valor menor = " + notas.calcularMenor());
 
-            if (evento.getSource() == limpiar) {
-                campoNota.setText("");
-            }
         }
+
+        if (evento.getSource() == limpiar) {
+            campoNota.setText("");
+            modeloLista.clear();
+            promedio.setText("Promedio = ");
+            desviacion.setText("Desviación estándar = ");
+            mayor.setText("Valor mayor = ");
+            menor.setText("Valor menor = ");
+        }
+
+        if (evento.getSource() == addNota) {
+            addNotaALista();
+        }
+    }
+
+    private void addNotaALista(){
+        Double nota = Double.parseDouble(campoNota.getText());
+        notas.listaNotas.add(nota);
+        modeloLista.addElement(nota);
+        campoNota.setText("");
+
     }
 }
