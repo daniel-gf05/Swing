@@ -15,7 +15,7 @@ import javax.swing.*;
 
 // Label y un textfield para nota (SOLO UNA) -
 // Necesito un JList para verlas -
-// BOTONES:  añadir nota
+// BOTONES:  añadir nota -
 // eliminar una nota
 // borrar todas las notas
 // CALCULAR hace los promedios , desviacion ,mayor y menor como el ejercicio original
@@ -24,10 +24,10 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
     private Container contenedor;
     private JLabel nota, promedio, desviacion, mayor, menor;
     private JTextField campoNota;
-    private JButton calcular, limpiar, addNota;
+    private JButton calcular, limpiar, addNota, eliminarNota;
     private JList campoLista;
-    DefaultListModel<Double> modeloLista;
-    JScrollPane scrollLista;
+    private DefaultListModel<Double> modeloLista;
+    private JScrollPane scrollLista;
 
     static Notas notas = new Notas();
 
@@ -35,7 +35,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
     public VentanaPrincipal() {
         inicio(); // Inicializa completamente la VISTA
         setTitle("Calculadora Notas");
-        setSize(280, 380);
+        setSize(310, 380);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -49,7 +49,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
     nota = new JLabel("Nota:");
     nota.setBounds(20, 20, 50, 25);
     campoNota = new JTextField();
-    campoNota.setBounds(80, 20, 170, 25);
+    campoNota.setBounds(80, 20, 200, 25);
 
     // Modelo
     modeloLista = new DefaultListModel<>();
@@ -61,36 +61,41 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
 
 
     scrollLista = new JScrollPane();
-    scrollLista.setBounds(20, 60, 230, 80);
+    scrollLista.setBounds(20, 55, 260, 60);
     scrollLista.setViewportView(campoLista);
 
     // Botón Añadir
     addNota = new JButton("Añadir");
-    addNota.setBounds(20, 150, 100, 25);
+    addNota.setBounds(20, 130, 80, 25);
     addNota.addActionListener(this);
 
     // Botón Calcular
     calcular = new JButton("Calcular");
-    calcular.setBounds(130, 150, 120, 25);
+    calcular.setBounds(110, 130, 90, 25);
     calcular.addActionListener(this);
 
     // Botón Limpiar
     limpiar = new JButton("Limpiar");
-    limpiar.setBounds(80, 185, 100, 25);
+    limpiar.setBounds(210, 130, 80, 25);
     limpiar.addActionListener(this);
+    
+    // Botón eliminar
+    eliminarNota = new JButton("Eliminar nota");
+    eliminarNota.setBounds(20, 170, 270, 30);
+    eliminarNota.addActionListener(this);
 
     // Etiquetas de resultados
     promedio = new JLabel("Promedio = ");
-    promedio.setBounds(20, 220, 240, 23);
+    promedio.setBounds(20, 220, 270, 23);
 
     desviacion = new JLabel("Desviación estándar = ");
-    desviacion.setBounds(20, 250, 240, 23);
+    desviacion.setBounds(20, 250, 270, 23);
 
     mayor = new JLabel("Valor mayor = ");
-    mayor.setBounds(20, 280, 240, 23);
+    mayor.setBounds(20, 280, 270, 23);
 
     menor = new JLabel("Valor menor = ");
-    menor.setBounds(20, 310, 240, 23);
+    menor.setBounds(20, 310, 270, 23);
 
         // Añadir componentes
         contenedor.add(nota);
@@ -103,6 +108,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         contenedor.add(menor);
         contenedor.add(addNota);
         contenedor.add(scrollLista);
+        contenedor.add(eliminarNota);
     }
 
     @Override
@@ -131,6 +137,10 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         if (evento.getSource() == addNota) {
             addNotaALista();
         }
+
+        if (evento.getSource() == eliminarNota) {
+            eliminar(campoLista.getSelectedIndex());
+        }
     }
 
     private void addNotaALista(){
@@ -138,6 +148,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         notas.listaNotas.add(nota);
         modeloLista.addElement(nota);
         campoNota.setText("");
+    }
 
+    private void eliminar(int indice){
+        if (indice >= 0) {
+            notas.listaNotas.remove(indice);
+            modeloLista.removeElementAt(indice);
+        }
     }
 }
